@@ -37,5 +37,8 @@ while True:
     screen.blit(player_surface, player_react)
     player_react.left += 1
 
+    if player_react.colliderect(snail_rect):
+        print('collision')
+
     pygame.display.update()
     clock.tick(60)
