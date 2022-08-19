@@ -51,6 +51,7 @@ while True:
     # Player
     player_gravity += 1
     player_react.bottom += player_gravity
+    if player_react.bottom >= 300: player_react.bottom = 300
     screen.blit(player_surface, player_react)
 
     pygame.display.update()
