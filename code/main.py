@@ -22,19 +22,21 @@ ground_surface = pygame.image.load('graphics/ground.png').convert()
 # score_surf = test_font.render('Pixel Runner', False, (64,64,64))
 # score_ract = score_surf.get_rect(center = (400, 50))
 
+# obstacles
+
 snail_surface = pygame.image.load('graphics/snail/snail1.png').convert_alpha()
 snail_rect = snail_surface.get_rect(midbottom = (900, 300))
+
+obstacle_rect_list = []
 
 player_surface = pygame.image.load('graphics/Player/player_walk_1.png').convert_alpha()
 player_react = player_surface.get_rect(midbottom = (80, 300))
 player_gravity = 0
 
-# intro
-# player
+# intro screen
 player_stand = pygame.image.load('graphics/Player/player_stand.png').convert_alpha()
 player_stand = pygame.transform.rotozoom(player_stand,0, 2)
 player_stand_rect = player_stand.get_rect(center = (400, 200))
-# texts
 
 game_title = test_font.render('Pixel Runner', False, (64,64,64))
 game_title_rect = game_title.get_rect(midtop = (400, 50))
@@ -43,6 +45,9 @@ game_start_instraction_rect= game_start_instraction.get_rect(midtop = (400, 350)
 
 score = 0
 
+# timer
+obstacle_timer = pygame.USEREVENT+1
+pygame.time.set_timer(obstacle_timer, 900)
 
 while True:
     for event in pygame.event.get():
@@ -63,6 +68,9 @@ while True:
                 player_react.bottom = 300
                 start_time = int(pygame.time.get_ticks()/1000)
                 game_active = True
+
+        if event.type == obstacle_timer and game_active:
+            print('test custom event')
 
     if game_active:
         screen.blit(sky_surface, (0, 0))
