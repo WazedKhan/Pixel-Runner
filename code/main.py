@@ -6,6 +6,7 @@ def display_score():
     score_surf = test_font.render(f'Score: {time}', False, (64,64,64))
     score_ract = score_surf.get_rect(center = (400, 50))
     screen.blit(score_surf, score_ract)
+    return time
 
 pygame.init()
 screen = pygame.display.set_mode((800, 400))
@@ -28,6 +29,19 @@ player_surface = pygame.image.load('graphics/Player/player_walk_1.png').convert_
 player_react = player_surface.get_rect(midbottom = (80, 300))
 player_gravity = 0
 
+# intro
+# player
+player_stand = pygame.image.load('graphics/Player/player_stand.png').convert_alpha()
+player_stand = pygame.transform.rotozoom(player_stand,0, 2)
+player_stand_rect = player_stand.get_rect(center = (400, 200))
+# texts
+
+game_title = test_font.render('Pixel Runner', False, (64,64,64))
+game_title_rect = game_title.get_rect(midtop = (400, 50))
+game_start_instraction = test_font.render('Press "Space" to start the game', False, (64,64,64))
+game_start_instraction_rect= game_start_instraction.get_rect(midtop = (400, 350))
+
+score = 0
 
 
 while True:
@@ -53,10 +67,7 @@ while True:
     if game_active:
         screen.blit(sky_surface, (0, 0))
         screen.blit(ground_surface, (0, 300))
-        # pygame.draw.rect(screen, "#c0e8ec", score_ract)
-        # pygame.draw.rect(screen, '#c0e8ec', score_ract, 10)
-        # screen.blit(score_surf, score_ract)
-        display_score()
+        score = display_score()
 
         snail_rect.right -= 5
         if snail_rect.right <= -100: snail_rect.right = 900
@@ -71,9 +82,18 @@ while True:
         # Collision
         if player_react.colliderect(snail_rect):
             game_active = False
+            screen.blit(player_stand, player_stand_rect)
     else:
-        # screen.fill()
-        pass
+        screen.fill((94,129,162))
+        screen.blit(player_stand, player_stand_rect)
+        screen.blit(game_title, game_title_rect)
+
+        score_message = test_font.render(f'Your score: {score}', False, (64, 64, 64))
+        score_message_rect = score_message.get_rect(center = (400, 340))
+
+        if score != 0: screen.blit(score_message, score_message_rect)
+        else: screen.blit(game_start_instraction, game_start_instraction_rect)
+
 
 
     pygame.display.update()
