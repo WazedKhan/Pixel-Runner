@@ -1,7 +1,47 @@
+from ast import Pass
 from random import randint
-from re import L
 import pygame
 import sys
+
+class Player(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        player_walk_1 = pygame.image.load('graphics/Player/player_walk_1.png').convert_alpha()
+        player_walk_2 = pygame.image.load('graphics/Player/player_walk_2.png').convert_alpha()
+        self.player_walk = [player_walk_1, player_walk_2]
+        self.player_index = 0
+        self.player_jump = pygame.image.load('graphics/Player/jump.png').convert_alpha()
+        self.image = self.player_walk[self.player_index]
+        self.rect = self.image.get_rect(midbottom = (200, 300))
+        self.gravity = 0
+
+    def player_input(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_SPACE] and self.rect.bottom >= 300:
+            self.gravity = -20
+
+    def apply_gravity(self):
+        self.gravity += 1
+        self.rect.bottom += self.gravity
+        if self.rect.bottom >= 300:
+            self.rect.bottom = 300
+
+    def animation_state(self):
+        if self.rect.bottom < 300:
+            self.image = self.player_jump
+        else:
+            self.player_index += 0.1
+            if self.player_index >= len(self.player_walk):
+                self.player_index = 0
+            self.image = self.player_walk[int(self.player_index)]
+
+    def update(self):
+        self.player_input()
+        self.apply_gravity()
+        self.animation_state()
+
+
+
 
 def display_score():
     time = (int(pygame.time.get_ticks()/1000) - start_time)
@@ -93,6 +133,9 @@ game_start_instraction_rect= game_start_instraction.get_rect(midtop = (400, 350)
 
 score = 0
 
+player = pygame.sprite.GroupSingle()
+player.add(Player())
+
 # timer
 obstacle_timer = pygame.USEREVENT+1
 pygame.time.set_timer(obstacle_timer, 1500)
@@ -156,6 +199,8 @@ while True:
         if player_rect.bottom >= 300: player_rect.bottom = 300
         player_animation()
         screen.blit(player_surface, player_rect)
+        player.draw(screen)
+        player.update()
 
         # Collision
         game_active = collisions(player_rect, obstacle_rect_list)
