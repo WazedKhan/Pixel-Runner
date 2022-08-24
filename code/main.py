@@ -1,3 +1,4 @@
+from random import randint
 import pygame
 import sys
 
@@ -7,6 +8,19 @@ def display_score():
     score_ract = score_surf.get_rect(center = (400, 50))
     screen.blit(score_surf, score_ract)
     return time
+
+
+def obstacle_movement(obstacle_list):
+    if obstacle_list:
+        for obstacle_rect in obstacle_list:
+            obstacle_rect.right -= 5
+
+            screen.blit(snail_surface, obstacle_rect)
+
+        obstacle_list = [obstacle for obstacle in obstacle_list if obstacle.right > -10]
+
+        return obstacle_list
+    else: return []
 
 pygame.init()
 screen = pygame.display.set_mode((800, 400))
@@ -47,7 +61,7 @@ score = 0
 
 # timer
 obstacle_timer = pygame.USEREVENT+1
-pygame.time.set_timer(obstacle_timer, 900)
+pygame.time.set_timer(obstacle_timer, 1500)
 
 while True:
     for event in pygame.event.get():
@@ -70,16 +84,16 @@ while True:
                 game_active = True
 
         if event.type == obstacle_timer and game_active:
-            print('test custom event')
+            obstacle_rect_list.append(snail_surface.get_rect(midbottom = (randint(900, 1100), 300)))
 
     if game_active:
+        # background
         screen.blit(sky_surface, (0, 0))
         screen.blit(ground_surface, (0, 300))
         score = display_score()
 
-        snail_rect.right -= 5
-        if snail_rect.right <= -100: snail_rect.right = 900
-        screen.blit(snail_surface, snail_rect)
+        # obstacle movement
+        obstacle_rect_list = obstacle_movement(obstacle_rect_list)
 
         # Player
         player_gravity += 1
