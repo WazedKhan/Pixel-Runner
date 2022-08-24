@@ -1,4 +1,5 @@
 from random import randint
+from re import L
 import pygame
 import sys
 
@@ -8,7 +9,6 @@ def display_score():
     score_ract = score_surf.get_rect(center = (400, 50))
     screen.blit(score_surf, score_ract)
     return time
-
 
 def obstacle_movement(obstacle_list):
     if obstacle_list:
@@ -24,6 +24,13 @@ def obstacle_movement(obstacle_list):
 
         return obstacle_list
     else: return []
+
+def collisions(player, obstacle):
+    if obstacle:
+        for obstacle_rect in obstacle:
+            if player.colliderect(obstacle_rect):
+                return False
+    return True
 
 pygame.init()
 screen = pygame.display.set_mode((800, 400))
@@ -47,7 +54,7 @@ obstacle_rect_list = []
 
 # player
 player_surface = pygame.image.load('graphics/Player/player_walk_1.png').convert_alpha()
-player_react = player_surface.get_rect(midbottom = (80, 300))
+player_rect = player_surface.get_rect(midbottom = (80, 300))
 player_gravity = 0
 
 # intro screen
@@ -73,15 +80,15 @@ while True:
             sys.exit()
         if game_active:
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if player_react.collidepoint(event.pos) and player_react.bottom == 300:
+                if player_rect.collidepoint(event.pos) and player_rect.bottom == 300:
                     player_gravity = -22
 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE and player_react.bottom == 300:
+                if event.key == pygame.K_SPACE and player_rect.bottom == 300:
                     player_gravity = -22
         else:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                player_react.bottom = 300
+                player_rect.bottom = 300
                 start_time = int(pygame.time.get_ticks()/1000)
                 game_active = True
 
@@ -102,16 +109,19 @@ while True:
 
         # Player
         player_gravity += 1
-        player_react.bottom += player_gravity
-        if player_react.bottom >= 300: player_react.bottom = 300
-        screen.blit(player_surface, player_react)
+        player_rect.bottom += player_gravity
+        if player_rect.bottom >= 300: player_rect.bottom = 300
+        screen.blit(player_surface, player_rect)
 
         # Collision
-
+        game_active = collisions(player_rect, obstacle_rect_list)
     else:
         screen.fill((94,129,162))
         screen.blit(player_stand, player_stand_rect)
         screen.blit(game_title, game_title_rect)
+        obstacle_rect_list.clear()
+        player_rect.midbottom = (80, 300)
+        player_gravity = 0
 
         score_message = test_font.render(f'Your score: {score}', False, (64, 64, 64))
         score_message_rect = score_message.get_rect(center = (400, 340))
