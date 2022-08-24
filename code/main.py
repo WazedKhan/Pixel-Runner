@@ -32,6 +32,17 @@ def collisions(player, obstacle):
                 return False
     return True
 
+def player_animation():
+    # play walking animation if player is on floor
+    # display jump surface if player is not not floor
+    global player_surface, player_index
+    if player_rect.bottom < 300:
+        player_surface = player_jump
+    else:
+        player_index += .1
+        if player_index >= len(player_walk): player_index = 0
+        player_surface = player_walk[int(player_index)]
+
 pygame.init()
 screen = pygame.display.set_mode((800, 400))
 pygame.display.set_caption('Pixel Runner')
@@ -53,7 +64,13 @@ fly_surface = pygame.image.load('graphics/Fly/Fly1.png').convert_alpha()
 obstacle_rect_list = []
 
 # player
-player_surface = pygame.image.load('graphics/Player/player_walk_1.png').convert_alpha()
+player_walk_1 = pygame.image.load('graphics/Player/player_walk_1.png').convert_alpha()
+player_walk_2 = pygame.image.load('graphics/Player/player_walk_2.png').convert_alpha()
+player_walk = [player_walk_1, player_walk_2]
+player_index = 0
+player_jump = pygame.image.load('graphics/Player/jump.png').convert_alpha()
+
+player_surface = player_walk[player_index]
 player_rect = player_surface.get_rect(midbottom = (80, 300))
 player_gravity = 0
 
@@ -111,6 +128,7 @@ while True:
         player_gravity += 1
         player_rect.bottom += player_gravity
         if player_rect.bottom >= 300: player_rect.bottom = 300
+        player_animation()
         screen.blit(player_surface, player_rect)
 
         # Collision
