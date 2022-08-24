@@ -15,7 +15,10 @@ def obstacle_movement(obstacle_list):
         for obstacle_rect in obstacle_list:
             obstacle_rect.right -= 5
 
-            screen.blit(snail_surface, obstacle_rect)
+            if obstacle_rect.bottom == 300:
+                screen.blit(snail_surface, obstacle_rect)
+            else:
+                screen.blit(fly_surface, obstacle_rect)
 
         obstacle_list = [obstacle for obstacle in obstacle_list if obstacle.right > -10]
 
@@ -37,12 +40,12 @@ ground_surface = pygame.image.load('graphics/ground.png').convert()
 # score_ract = score_surf.get_rect(center = (400, 50))
 
 # obstacles
-
 snail_surface = pygame.image.load('graphics/snail/snail1.png').convert_alpha()
-snail_rect = snail_surface.get_rect(midbottom = (900, 300))
+fly_surface = pygame.image.load('graphics/Fly/Fly1.png').convert_alpha()
 
 obstacle_rect_list = []
 
+# player
 player_surface = pygame.image.load('graphics/Player/player_walk_1.png').convert_alpha()
 player_react = player_surface.get_rect(midbottom = (80, 300))
 player_gravity = 0
@@ -78,13 +81,15 @@ while True:
                     player_gravity = -22
         else:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                snail_rect.right = 900
                 player_react.bottom = 300
                 start_time = int(pygame.time.get_ticks()/1000)
                 game_active = True
 
         if event.type == obstacle_timer and game_active:
-            obstacle_rect_list.append(snail_surface.get_rect(midbottom = (randint(900, 1100), 300)))
+            if randint(0, 2):
+                obstacle_rect_list.append(snail_surface.get_rect(midbottom = (randint(900, 1100), 300)))
+            else:
+                obstacle_rect_list.append(fly_surface.get_rect(midbottom = (randint(900, 1100), 210)))
 
     if game_active:
         # background
@@ -102,9 +107,7 @@ while True:
         screen.blit(player_surface, player_react)
 
         # Collision
-        if player_react.colliderect(snail_rect):
-            game_active = False
-            screen.blit(player_stand, player_stand_rect)
+
     else:
         screen.fill((94,129,162))
         screen.blit(player_stand, player_stand_rect)
